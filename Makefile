@@ -11,12 +11,12 @@ LDFLAGS  =
 LDLIBS   = -llua
 
 ## Debugging flags
-CPPFLAGS += -UNDEBUG -DDEBUG
-CFLAGS += -Og -ggdb3
+#CPPFLAGS += -UNDEBUG -DDEBUG
+#CFLAGS += -Og -ggdb3
 
 ## Enable LLVM/Clang
-CC = clang
-CFLAGS += -Os -Weverything
+#CC = clang
+#CFLAGS += -Os -Weverything
 
 $(BIN): $(SRC)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@

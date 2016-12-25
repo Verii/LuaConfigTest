@@ -85,7 +85,6 @@ l_sandbox(lua_State* L, const char** wl)
     if (wl[i] == NULL) {
       lua_pushnil(L);
       lua_setfield(L, table_idx, key);
-      fprintf(stderr, "removed function: \"%s\"\n", key);
     }
   }
 
