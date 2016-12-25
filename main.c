@@ -8,7 +8,7 @@ int
 main(int argc, char **argv)
 {
   if (argc <= 2) {
-    fprintf(stderr, "usage: <file> <search key>\n");
+    fprintf(stderr, "usage: %s <file> <search key>\n", argv[0]);
     return EXIT_FAILURE;
   }
 
