@@ -8,6 +8,19 @@
 
 #include "lua_config.h"
 
+
+/* whitelist contains the functions that our configuration file _can_ use for
+ * whatever reason. We only enable the base library, to find the internal
+ * functions I wrote the following Lua code:
+ *
+ * i = nil;
+ * repeat
+ *  i,v = next(_G,i)
+ *  if type(v) == "function" then
+ *    print(i)
+ *  end
+ * until not i
+ */
 static const char *whitelist[] = {
   "assert", "ipairs", "next", "pairs", "print", "tonumber", "tostring", "type",
   NULL // terminator
@@ -61,7 +74,9 @@ config_new(const char* path)
   tmp_conf->L = luaL_newstate();
   assert(tmp_conf->L);
 
-  luaopen_base(tmp_conf->L); // print, next, ...
+  // Open the base library but remove some functions before reading the user's
+  // configuration file
+  luaopen_base(tmp_conf->L);
   l_sandbox(tmp_conf->L, whitelist);
 
   // Only return NULL if we can't read the file
