@@ -1,7 +1,7 @@
 SRC =	main.c lua_config.c
 
 BIN = testConfig
-VERSION = v0.0
+VERSION = v0.1
 
 CPPFLAGS = -DVERSION=\"${VERSION}\" -DNDEBUG -UDEBUG
 CFLAGS   = -std=gnu11 -Wall -Wextra -Wpedantic -Os
@@ -15,8 +15,8 @@ CPPFLAGS += -UNDEBUG -DDEBUG
 CFLAGS += -Og -ggdb3
 
 ## Enable LLVM/Clang
-#CC = clang
-#CFLAGS += -Os -Weverything
+CC = clang
+CFLAGS += -Os -Weverything
 
 $(BIN): $(SRC)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
