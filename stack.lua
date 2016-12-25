@@ -23,5 +23,17 @@ table.key2  = 'b'
 table.key3  = 10.33
 table['1'] = 'notice me'
 
+
+print('\navailable functions:')
+local i = nil;
+repeat
+  i,v = next(_G,i)
+  if type(v) == "function" and i ~= 'v' then
+    print('',i)
+  end
+until not i
+
+print('')
+
 -- 'table' gets added to the stack
 return table
