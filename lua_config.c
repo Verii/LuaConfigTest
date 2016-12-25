@@ -102,12 +102,13 @@ config_get_key(struct config* c, const char* key, char** res, size_t* len)
 
   const uint8_t stack_top = lua_gettop(c->L);
   char* value = NULL;
+  size_t value_len = 0;
   int ret = -1; // assume error
 
   lua_pushnil(c->L); // first key
   while (lua_next(c->L, stack_top)) {
 
-    // fail if it's not a string
+    // fail if key is not a string
     if (!lua_isstring(c->L, -2)) {
       break;
     }
@@ -115,25 +116,27 @@ config_get_key(struct config* c, const char* key, char** res, size_t* len)
     const char* search_key;
     search_key = lua_tolstring(c->L, -2, NULL);
 
-    // store key or fail if it's not a string or number
+    // return value if it iss a string or number
     if (!strcmp(key, search_key) &&
         (lua_isnumber(c->L, -1) || lua_isstring(c->L, -1))) {
-      size_t val_len = -1;
+
       const char* tmp_val;
-      tmp_val = lua_tolstring(c->L, -1, &val_len);
+      tmp_val = lua_tolstring(c->L, -1, &value_len);
 
-      value = malloc(val_len);
-      strncpy(value, tmp_val, val_len);
+      value = malloc(value_len +1);
+      strncpy(value, tmp_val, value_len);
+      value[value_len] = '\0';
 
-      if (len)
-        *len = val_len;
-      *res = value;
       ret = 0;
       break;
     }
 
     lua_pop(c->L, 1);
   }
+
+  if (len)
+    *len = value_len;
+  *res = value;
 
   // restore stack to its original state
   lua_pop(c->L, lua_gettop(c->L) - stack_top);
