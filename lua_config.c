@@ -201,6 +201,9 @@ config_print_table(struct config* c, enum config_print_format fmt)
   const uint8_t table_idx = (uint8_t) lua_gettop(c->L);
   int ret = -1;
 
+  if (fmt == CONFIG_PRINT_PRETTY)
+    printf("{\n");
+
   lua_pushnil(c->L); // first key
   while (lua_next(c->L, table_idx)) {
     const char *key, *value;
@@ -214,20 +217,13 @@ config_print_table(struct config* c, enum config_print_format fmt)
       value = lua_tolstring(c->L, -1, NULL);
     }
 
-    if (key && value) {
-      switch (fmt) {
-        case CONFIG_PRINT_PRETTY:
-        case CONFIG_PRINT_INDENT:
-          printf("  ");
-          break;
-        case CONFIG_PRINT_NONE:
-          break;
-      }
-      printf("%s : %s\n", key, value);
-    }
+    l_pretty_printer(fmt, key, value);
 
     lua_pop(c->L, 1);
   }
+
+  if (fmt == CONFIG_PRINT_PRETTY)
+    printf("}\n");
 
   // restore stack to its original state
   lua_pop(c->L, lua_gettop(c->L) - table_idx);
