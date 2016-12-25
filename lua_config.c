@@ -136,6 +136,6 @@ config_get_key(struct config* c, const char* key, char** res, size_t* len)
   }
 
   // restore stack to its original state
-  lua_pop(c->L, stack_top - lua_gettop(c->L));
+  lua_pop(c->L, lua_gettop(c->L) - stack_top);
   return ret;
 }
