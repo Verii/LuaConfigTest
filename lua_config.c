@@ -124,7 +124,7 @@ config_get_key(struct config* c, const char* key, char** res, size_t* res_len)
   while (lua_next(c->L, table_idx)) {
 
     // fail if key is not a string
-    if (!lua_isstring(c->L, -2)) {
+    if (lua_type(c->L, -2) != LUA_TSTRING) {
       break;
     }
 
@@ -132,8 +132,7 @@ config_get_key(struct config* c, const char* key, char** res, size_t* res_len)
     search_key = lua_tolstring(c->L, -2, NULL);
 
     // return value if it iss a string or number
-    if (!strcmp(key, search_key) &&
-        (lua_isnumber(c->L, -1) || lua_isstring(c->L, -1))) {
+    if (!strcmp(key, search_key) && lua_isstring(c->L, -1)) {
 
       const char* tmp_val;
       tmp_val = lua_tolstring(c->L, -1, &value_len);
@@ -209,13 +208,13 @@ config_print_table(struct config* c, enum config_print_format fmt)
     const char *key, *value;
     key = value = NULL;
 
-    if (lua_isstring(c->L, -2)) {
+    if (lua_type(c->L, -2) == LUA_TSTRING)
       key = lua_tolstring(c->L, -2, NULL);
-    }
 
-    if (lua_isstring(c->L, -1) || lua_isnumber(c->L, -1)) {
+    // lua_isstring actually tests if it can be converted to a string
+    // e.g. is a string or a number
+    if (lua_isstring(c->L, -1))
       value = lua_tolstring(c->L, -1, NULL);
-    }
 
     l_pretty_printer(fmt, key, value);
 
