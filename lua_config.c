@@ -138,3 +138,56 @@ config_get_key(struct config* c, const char* key, char** res, size_t* res_len)
   lua_pop(c->L, lua_gettop(c->L) - table_idx);
   return ret;
 }
+
+/* Prints each key:value pair to standard out
+ *
+ * each index in the table must be a string
+ * each value must be either a string or number (convertible to string)
+ *
+ * 0 is returned if there are no type violations
+ * non-0 is returned otherwise
+ */
+int
+config_print_table(struct config* c, enum config_print_format fmt)
+{
+  assert(c);
+  assert(c->L);
+
+  if (!lua_istable(c->L, -1))
+    return -1;
+
+  const uint8_t table_idx = (uint8_t) lua_gettop(c->L);
+  int ret = -1;
+
+  lua_pushnil(c->L); // first key
+  while (lua_next(c->L, table_idx)) {
+    const char *key, *value;
+    key = value = NULL;
+
+    if (lua_isstring(c->L, -2)) {
+      key = lua_tolstring(c->L, -2, NULL);
+    }
+
+    if (lua_isstring(c->L, -1) || lua_isnumber(c->L, -1)) {
+      value = lua_tolstring(c->L, -1, NULL);
+    }
+
+    if (key && value) {
+      switch (fmt) {
+        case CONFIG_PRINT_PRETTY:
+        case CONFIG_PRINT_INDENT:
+          printf("  ");
+          break;
+        case CONFIG_PRINT_NONE:
+          break;
+      }
+      printf("%s : %s\n", key, value);
+    }
+
+    lua_pop(c->L, 1);
+  }
+
+  // restore stack to its original state
+  lua_pop(c->L, lua_gettop(c->L) - table_idx);
+  return ret;
+}
