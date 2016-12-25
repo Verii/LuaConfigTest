@@ -14,23 +14,23 @@ main(int argc, char **argv)
 
   // read the configuration in file provided by the first arg
   struct config *c = config_new(argv[1]);
-  assert(c);
+  if (!c) {
+    fprintf(stderr, "Unable to parse configuration file: %s\n", argv[1]);
+    fprintf(stderr, "Aborting\n");
+    return EXIT_FAILURE;
+  }
 
   argc -= 2;
   argv += 2;
 
   // if the user doesn't give us any keys to print, print them all
   if (!(*argv)) {
-    config_print_table(c, CONFIG_PRINT_NONE);
+    config_print_table(c, CONFIG_PRINT_PRETTY);
 
   // loop over each supplied key and print its value
   } else {
     do {
-      char *val;
-      size_t len;
-      config_get_key(c, *argv, &val, &len);
-      printf("%s : (%lu) %s\n", *argv, len, val);
-      free(val);
+      config_print_keyval(c, *argv, CONFIG_PRINT_PRETTY);
     } while (*(++argv));
   }
 
