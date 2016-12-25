@@ -1,7 +1,7 @@
 SRC =	main.c lua_config.c
 
 BIN = testConfig
-VERSION = v0.1
+VERSION = v0.2
 
 CPPFLAGS = -DVERSION=\"${VERSION}\" -DNDEBUG -UDEBUG
 CFLAGS   = -std=gnu11 -Wall -Wextra -Wpedantic -Os
