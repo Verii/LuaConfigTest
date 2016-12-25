@@ -29,11 +29,45 @@ static const char *whitelist[] = {
 static void
 l_sandbox(lua_State* L, const char** wl)
 {
-  (void) L; (void) wl;
-  // get global _G
-  // compare each entry to whitelist
-  // set to nil any entry not in whitelist
-  return;
+  const uint8_t orig_idx = (uint8_t) lua_gettop(L);
+  const uint8_t table_idx = orig_idx +1;
+
+  // use global environment
+  if (lua_getglobal(L, "_G") != LUA_TTABLE)
+    return;
+
+  lua_pushnil(L); // first key
+  while (lua_next(L, table_idx)) {
+    const char *key = NULL;
+
+    if (lua_type(L, -2) == LUA_TSTRING)
+      key = lua_tolstring(L, -2, NULL);
+
+    // only remove functions
+    if (lua_type(L, -1) != LUA_TFUNCTION) {
+      lua_pop(L, 1);
+      continue;
+    }
+
+    lua_pop(L, 1);
+
+    // loop thru the whitelist, break when we find the key
+    int i;
+    for (i = 0; wl[i]; i++)
+      if (!strcmp(key, wl[i]))
+        break;
+
+    // Function not found in whitelist!
+    // Remove it
+    if (wl[i] == NULL) {
+      lua_pushnil(L);
+      lua_setfield(L, table_idx, key);
+      fprintf(stderr, "removed function: \"%s\"\n", key);
+    }
+  }
+
+  // restore stack to its original state
+  lua_pop(L, lua_gettop(L) - orig_idx);
 }
 
 /* Allow pretty printing of (key):(value) pairs according to (fmt) */
