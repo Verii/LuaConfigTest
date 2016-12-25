@@ -15,11 +15,16 @@ main(int argc, char **argv)
   struct config *c = config_new(argv[1]);
   assert(c);
 
-  char *val;
-  size_t len;
-  config_get_key(c, argv[2], &val, &len);
+  argc -= 2;
+  argv += 2;
 
-  printf("%s : (%lu) %s\n", argv[2], len, val);
+  do {
+    char *val;
+    size_t len;
+    config_get_key(c, *argv, &val, &len);
+    printf("%s : (%lu) %s\n", *argv, len, val);
+    free(val);
+  } while (*(++argv));
 
   config_delete(c);
   return EXIT_SUCCESS;
