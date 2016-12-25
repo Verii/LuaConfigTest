@@ -85,9 +85,10 @@ config_delete(struct config* c)
  * non-0 is returned in any other case
  */
 int
-config_get_key(struct config* c, const char* key, char** res, size_t* len)
+config_get_key(struct config* c, const char* key, char** res, size_t* res_len)
 {
   assert(c);
+  assert(c->L);
   assert(key);
   assert(res);
 
@@ -95,13 +96,13 @@ config_get_key(struct config* c, const char* key, char** res, size_t* len)
   if (!lua_istable(c->L, -1))
     return -1;
 
-  const uint8_t stack_top = lua_gettop(c->L);
+  const uint8_t table_idx = (uint8_t) lua_gettop(c->L);
   char* value = NULL;
   size_t value_len = 0;
   int ret = -1; // assume error
 
   lua_pushnil(c->L); // first key
-  while (lua_next(c->L, stack_top)) {
+  while (lua_next(c->L, table_idx)) {
 
     // fail if key is not a string
     if (!lua_isstring(c->L, -2)) {
@@ -129,11 +130,11 @@ config_get_key(struct config* c, const char* key, char** res, size_t* len)
     lua_pop(c->L, 1);
   }
 
-  if (len)
-    *len = value_len;
+  if (res_len)
+    *res_len = value_len;
   *res = value;
 
   // restore stack to its original state
-  lua_pop(c->L, lua_gettop(c->L) - stack_top);
+  lua_pop(c->L, lua_gettop(c->L) - table_idx);
   return ret;
 }
