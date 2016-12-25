@@ -47,6 +47,9 @@ int
 config_get_key(struct config *, const char *key, char **, size_t *);
 
 int
+config_print_keyval(struct config* c, const char*, enum config_print_format);
+
+int
 config_print_table(struct config *, enum config_print_format);
 
 #endif

@@ -23,6 +23,24 @@ l_sandbox(lua_State* L, const char** wl)
   return;
 }
 
+/* Allow pretty printing of (key):(value) pairs according to (fmt) */
+static void
+l_pretty_printer(enum config_print_format fmt, const char *key, const char *val)
+{
+  if (key && val) {
+    switch (fmt) {
+      case CONFIG_PRINT_PRETTY:
+      case CONFIG_PRINT_INDENT:
+        printf("  ");
+        break;
+      case CONFIG_PRINT_NONE:
+        break;
+    }
+
+    printf("\"%s\" : \"%s\"\n", key, val);
+  }
+}
+
 /* Returns a new configuration handle
  *
  * (path) is the location of the Lua configuration file
@@ -79,6 +97,7 @@ config_delete(struct config* c)
  *
  * (key) is the string index into this table.
  * (res) is the value at that index converted to a string.
+ * (res_len) is the length of the returned value
  * Therefore *only* string and number value types are supported.
  *
  * 0 is returned to indicate the key was found and it was of the proper type
@@ -136,6 +155,29 @@ config_get_key(struct config* c, const char* key, char** res, size_t* res_len)
 
   // restore stack to its original state
   lua_pop(c->L, lua_gettop(c->L) - table_idx);
+  return ret;
+}
+
+/* Allows easily printing a key:value pair
+ *
+ * (key) is searched for in the table and printed to the screen according to
+ * (fmt)
+ *
+ * Allows printing key:value pairs and whole tables with the same style easily
+ *
+ * Returns the result of config_get_key called with the given key
+ */
+int
+config_print_keyval(struct config* c, const char* key, enum config_print_format fmt)
+{
+  char *value;
+  size_t len;
+
+  int ret = config_get_key(c, key, &value, &len);
+  l_pretty_printer(fmt, key, value);
+
+  free(value);
+
   return ret;
 }
 
