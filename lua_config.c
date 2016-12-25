@@ -111,9 +111,10 @@ config_get_key(struct config* c, const char* key, char** res, size_t* res_len)
   assert(key);
   assert(res);
 
-  // Fail if the top value is not a table
+  // Fail if the value at the top of the stack is not a table
   if (!lua_istable(c->L, -1))
-    return -1;
+    goto fail;
+
 
   const uint8_t table_idx = (uint8_t) lua_gettop(c->L);
   char* value = NULL;
@@ -148,6 +149,14 @@ config_get_key(struct config* c, const char* key, char** res, size_t* res_len)
     lua_pop(c->L, 1);
   }
 
+fail:
+
+  // For consistency, always set return pointers to:
+  //  NULL/0 on error, or;
+  //  real data on success
+  //
+  // Otherwise, if we return from the next statement the return pointers will
+  // not have changed.
   if (res_len)
     *res_len = value_len;
   *res = value;
