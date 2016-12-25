@@ -7,8 +7,8 @@
 int
 main(int argc, char **argv)
 {
-  if (argc <= 2) {
-    fprintf(stderr, "usage: %s <file> <search key>\n", argv[0]);
+  if (argc <= 1) {
+    fprintf(stderr, "usage: %s <file> [search key ...]\n", argv[0]);
     return EXIT_FAILURE;
   }
 
@@ -18,13 +18,17 @@ main(int argc, char **argv)
   argc -= 2;
   argv += 2;
 
-  do {
-    char *val;
-    size_t len;
-    config_get_key(c, *argv, &val, &len);
-    printf("%s : (%lu) %s\n", *argv, len, val);
-    free(val);
-  } while (*(++argv));
+  if (!(*argv)) {
+    config_print_table(c, CONFIG_PRINT_NONE);
+  } else {
+    do {
+      char *val;
+      size_t len;
+      config_get_key(c, *argv, &val, &len);
+      printf("%s : (%lu) %s\n", *argv, len, val);
+      free(val);
+    } while (*(++argv));
+  }
 
   config_delete(c);
   return EXIT_SUCCESS;
