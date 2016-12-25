@@ -22,5 +22,5 @@ table.key1  = 'a'
 table.key2  = 'b'
 table.key3  = 10.33
 
--- 'table' gets added to the stack, lua_getglobal() will not see it
+-- 'table' gets added to the stack
 return table

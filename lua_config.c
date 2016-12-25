@@ -91,11 +91,6 @@ config_get_key(struct config* c, const char* key, char** res, size_t* len)
   assert(key);
   assert(res);
 
-  lua_getglobal(c->L, "table");
-  if (lua_isnil(c->L, -1))
-    fprintf(stderr, "Top of stack is nil, \"table\" does not exist\n");
-  lua_pop(c->L, 1);
-
   // Fail if the top value is not a table
   if (!lua_istable(c->L, -1))
     return -1;
