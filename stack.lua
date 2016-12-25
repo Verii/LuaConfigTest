@@ -23,6 +23,10 @@ table.key2  = 'b'
 table.key3  = 10.33
 table['1'] = 'notice me'
 
+--[[
+-- Sandboxing removed most functions from this environment
+-- Enjoy.
+--]]
 
 print('\navailable functions:')
 local i = nil;
@@ -35,5 +39,5 @@ until not i
 
 print('')
 
--- 'table' gets added to the stack
+-- 'table' gets added to the stack in the host
 return table
