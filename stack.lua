@@ -21,6 +21,7 @@ value types can be: { string, number }
 table.key1  = 'a'
 table.key2  = 'b'
 table.key3  = 10.33
+table['1'] = 'notice me'
 
 -- 'table' gets added to the stack
 return table
