@@ -12,14 +12,18 @@ main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
+  // read the configuration in file provided by the first arg
   struct config *c = config_new(argv[1]);
   assert(c);
 
   argc -= 2;
   argv += 2;
 
+  // if the user doesn't give us any keys to print, print them all
   if (!(*argv)) {
     config_print_table(c, CONFIG_PRINT_NONE);
+
+  // loop over each supplied key and print its value
   } else {
     do {
       char *val;
