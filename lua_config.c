@@ -111,15 +111,15 @@ config_get_key(struct config* c, const char* key, char** res, size_t* res_len)
   assert(key);
   assert(res);
 
-  // Fail if the value at the top of the stack is not a table
-  if (!lua_istable(c->L, -1))
-    goto fail;
-
-
   const uint8_t table_idx = (uint8_t) lua_gettop(c->L);
   char* value = NULL;
   size_t value_len = 0;
   int ret = -1; // assume error
+
+  // Fail if the value at the top of the stack is not a table
+  if (!lua_istable(c->L, -1))
+    goto fail;
+
 
   lua_pushnil(c->L); // first key
   while (lua_next(c->L, table_idx)) {
