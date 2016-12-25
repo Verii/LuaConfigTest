@@ -22,7 +22,8 @@
 
 struct config;
 
-enum config_print_format {
+enum config_print_format
+{
   CONFIG_PRINT_NONE,
   CONFIG_PRINT_INDENT,
   CONFIG_PRINT_PRETTY,
@@ -35,13 +36,11 @@ enum config_print_format {
  * returns NULL if the file is not valid Lua
  * returns a pointer if the file is valid
  */
-struct config *
-config_new(const char *path);
+struct config* config_new(const char* path);
 
 /* Closes a previously opened configuration handle
  */
-void
-config_delete(struct config *c);
+void config_delete(struct config* c);
 
 /* Returns the value from the requested (key) converted to a string
  *
@@ -57,8 +56,8 @@ config_delete(struct config *c);
  * 0 is returned to indicate the key was found and it was of the proper type
  * non-0 is returned in any other case
  */
-int
-config_get_key(struct config *c, const char *key, char **res, size_t *res_len);
+int config_get_key(struct config* c, const char* key, char** res,
+                   size_t* res_len);
 
 /* Allows easily printing a key:value pair
  *
@@ -69,8 +68,8 @@ config_get_key(struct config *c, const char *key, char **res, size_t *res_len);
  *
  * Returns the result of config_get_key called with the given key
  */
-int
-config_print_keyval(struct config* c, const char* key, enum config_print_format fmt);
+int config_print_keyval(struct config* c, const char* key,
+                        enum config_print_format fmt);
 
 /* Prints each key:value pair to standard out
  *
@@ -80,7 +79,6 @@ config_print_keyval(struct config* c, const char* key, enum config_print_format 
  * 0 is returned if there are no type violations
  * non-0 is returned otherwise
  */
-int
-config_print_table(struct config *c, enum config_print_format fmt);
+int config_print_table(struct config* c, enum config_print_format fmt);
 
 #endif

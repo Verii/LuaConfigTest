@@ -16,13 +16,13 @@
  */
 
 #include <assert.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "lua_config.h"
 
 int
-main(int argc, char **argv)
+main(int argc, char** argv)
 {
   if (argc <= 1) {
     fprintf(stderr, "usage: %s <file> [search key ...]\n", argv[0]);
@@ -30,7 +30,7 @@ main(int argc, char **argv)
   }
 
   // read the configuration in file provided by the first arg
-  struct config *c = config_new(argv[1]);
+  struct config* c = config_new(argv[1]);
   if (!c) {
     fprintf(stderr, "Unable to parse configuration file: %s\n", argv[1]);
     fprintf(stderr, "Aborting\n");
@@ -44,7 +44,7 @@ main(int argc, char **argv)
   if (!(*argv)) {
     config_print_table(c, CONFIG_PRINT_PRETTY);
 
-  // loop over each supplied key and print its value
+    // loop over each supplied key and print its value
   } else {
     do {
       config_print_keyval(c, *argv, CONFIG_PRINT_PRETTY);

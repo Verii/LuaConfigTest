@@ -25,11 +25,12 @@
 
 #include "lua_config.h"
 
-struct config {
-  const char *path;
+struct config
+{
+  const char* path;
   size_t path_len;
 
-  lua_State *L;
+  lua_State* L;
 };
 
 /* whitelist contains the functions that our configuration file _can_ use for
@@ -44,7 +45,7 @@ struct config {
  *  end
  * until not i
  */
-static const char *whitelist[] = {
+static const char* whitelist[] = {
   "assert", "ipairs", "next", "pairs", "print", "tonumber", "tostring", "type",
   NULL // terminator
 };
@@ -52,8 +53,8 @@ static const char *whitelist[] = {
 static void
 l_sandbox(lua_State* L, const char** wl)
 {
-  const uint8_t orig_idx = (uint8_t) lua_gettop(L);
-  const uint8_t table_idx = orig_idx +1;
+  const uint8_t orig_idx = (uint8_t)lua_gettop(L);
+  const uint8_t table_idx = orig_idx + 1;
 
   // use global environment
   if (lua_getglobal(L, "_G") != LUA_TTABLE)
@@ -61,7 +62,7 @@ l_sandbox(lua_State* L, const char** wl)
 
   lua_pushnil(L); // first key
   while (lua_next(L, table_idx)) {
-    const char *key = NULL;
+    const char* key = NULL;
 
     if (lua_type(L, -2) == LUA_TSTRING)
       key = lua_tolstring(L, -2, NULL);
@@ -94,7 +95,7 @@ l_sandbox(lua_State* L, const char** wl)
 
 /* Allow pretty printing of (key):(value) pairs according to (fmt) */
 static void
-l_pretty_printer(enum config_print_format fmt, const char *key, const char *val)
+l_pretty_printer(enum config_print_format fmt, const char* key, const char* val)
 {
   if (key && val) {
     switch (fmt) {
@@ -182,7 +183,7 @@ config_get_key(struct config* c, const char* key, char** res, size_t* res_len)
   assert(key);
   assert(res);
 
-  const uint8_t table_idx = (uint8_t) lua_gettop(c->L);
+  const uint8_t table_idx = (uint8_t)lua_gettop(c->L);
   char* value = NULL;
   size_t value_len = 0;
   int ret = -1; // assume error
@@ -190,7 +191,6 @@ config_get_key(struct config* c, const char* key, char** res, size_t* res_len)
   // Fail if the value at the top of the stack is not a table
   if (!lua_istable(c->L, -1))
     goto fail;
-
 
   lua_pushnil(c->L); // first key
   while (lua_next(c->L, table_idx)) {
@@ -209,7 +209,7 @@ config_get_key(struct config* c, const char* key, char** res, size_t* res_len)
       const char* tmp_val;
       tmp_val = lua_tolstring(c->L, -1, &value_len);
 
-      value = malloc(value_len +1);
+      value = malloc(value_len + 1);
       strncpy(value, tmp_val, value_len);
       value[value_len] = '\0';
 
@@ -247,9 +247,10 @@ fail:
  * Returns the result of config_get_key called with the given key
  */
 int
-config_print_keyval(struct config* c, const char* key, enum config_print_format fmt)
+config_print_keyval(struct config* c, const char* key,
+                    enum config_print_format fmt)
 {
-  char *value;
+  char* value;
   size_t len;
 
   int ret = config_get_key(c, key, &value, &len);
@@ -277,7 +278,7 @@ config_print_table(struct config* c, enum config_print_format fmt)
   if (!lua_istable(c->L, -1))
     return -1;
 
-  const uint8_t table_idx = (uint8_t) lua_gettop(c->L);
+  const uint8_t table_idx = (uint8_t)lua_gettop(c->L);
   int ret = -1;
 
   if (fmt == CONFIG_PRINT_PRETTY)
